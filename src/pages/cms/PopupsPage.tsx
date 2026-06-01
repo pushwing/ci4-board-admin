@@ -75,7 +75,7 @@ export default function PopupsPage() {
       position: detail.position,
       start_at: tsToDay(detail.start_at),
       end_at:   tsToDay(detail.end_at),
-      is_used:  detail.is_used === 1,
+      is_used:  Number(detail.is_used) === 1,
     })
     setModalOpen(true)
   }

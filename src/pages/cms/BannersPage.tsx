@@ -63,7 +63,7 @@ export default function BannersPage() {
       ...record,
       start_at: tsToDay(record.start_at),
       end_at:   tsToDay(record.end_at),
-      is_used:  record.is_used === 1,
+      is_used:  Number(record.is_used) === 1,
     })
     setModalOpen(true)
   }
@@ -80,7 +80,7 @@ export default function BannersPage() {
     },
     { title: '링크',   dataIndex: 'link_url', render: (v: string | null) => v ?? '-' },
     { title: '순서',   dataIndex: 'sequence', width: 70 },
-    { title: '사용',   dataIndex: 'is_used',  width: 70, render: (v: number) => <Switch checked={v === 1} disabled size="small" /> },
+    { title: '사용',   dataIndex: 'is_used',  width: 70, render: (v: number) => <Switch checked={Number(v) === 1} disabled size="small" /> },
     {
       title: '관리',
       width: 100,

@@ -61,7 +61,7 @@ export default function ArticlesPage() {
   const openEdit = async (record: Article) => {
     setEditing(record)
     setContents('')
-    form.setFieldsValue({ title: record.title, is_notice: record.is_notice === 1 })
+    form.setFieldsValue({ title: record.title, is_notice: Number(record.is_notice) === 1 })
     setModalOpen(true)
 
     // 본문은 단건 조회 API로 별도 로딩
@@ -94,7 +94,7 @@ export default function ArticlesPage() {
       dataIndex: 'title',
       render: (v: string, r: Article) => (
         <Space>
-          {r.is_notice === 1 && <Tag color="orange">공지</Tag>}
+          {Number(r.is_notice) === 1 && <Tag color="orange">공지</Tag>}
           {v}
         </Space>
       ),

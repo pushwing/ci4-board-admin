@@ -176,7 +176,7 @@ export default function MenusPage() {
       label:      item.label,
       url:        item.url,
       target:     item.target,
-      is_used:    item.is_used === 1,
+      is_used:    Number(item.is_used) === 1,
       parent_idx: item.parent_idx ?? undefined,
     })
     setModalOpen(true)
