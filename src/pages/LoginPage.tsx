@@ -28,10 +28,10 @@ export default function LoginPage() {
         </Typography.Title>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="login_id" label="아이디" rules={[{ required: true }]}>
-            <Input size="large" placeholder="관리자 아이디" />
+            <Input size="large" placeholder="관리자 아이디" onPressEnter={() => form.submit()} />
           </Form.Item>
           <Form.Item name="password" label="비밀번호" rules={[{ required: true }]}>
-            <Input.Password size="large" placeholder="비밀번호" />
+            <Input.Password size="large" placeholder="비밀번호" onPressEnter={() => form.submit()} />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" size="large" block>
