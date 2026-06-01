@@ -39,6 +39,8 @@ export const updateMember = (
 export const fetchArticles = (params?: { keyword?: string; bbs_id?: string; page?: number }) =>
   client.get('/articles', { params })
 
+export const fetchArticle = (idx: number) => client.get(`/articles/${idx}`)
+
 export const updateArticle = (
   idx: number,
   data: { title: string; contents: string; is_notice: boolean }

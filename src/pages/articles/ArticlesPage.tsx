@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Table, Button, Modal, Form, Input, Switch, Space, App,
-  Typography, Popconfirm, Tag, Select,
+  Typography, Popconfirm, Tag, Select, Spin,
 } from 'antd'
 import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { fetchArticles, updateArticle, deleteArticle } from '../../api/admin'
+import { fetchArticles, fetchArticle, updateArticle, deleteArticle } from '../../api/admin'
+import RichEditor from '../../components/RichEditor'
 import type { Article } from '../../types'
 
 export default function ArticlesPage() {
@@ -17,6 +18,8 @@ export default function ArticlesPage() {
   const [bbsFilter, setBbsFilter] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Article | null>(null)
+  const [contents, setContents] = useState('')
+  const [contentsLoading, setContentsLoading] = useState(false)
   const [form] = Form.useForm()
 
   const { data, isLoading } = useQuery({
@@ -34,14 +37,14 @@ export default function ArticlesPage() {
       if (!editing) return Promise.reject()
       return updateArticle(editing.idx, {
         title:     values.title,
-        contents:  values.contents,
+        contents,
         is_notice: !!values.is_notice,
       })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-articles'] })
       message.success('게시글이 수정되었습니다.')
-      setModalOpen(false)
+      closeModal()
     },
     onError: (err: any) => message.error(err.response?.data?.message ?? '저장에 실패했습니다.'),
   })
@@ -55,22 +58,36 @@ export default function ArticlesPage() {
     onError: (err: any) => message.error(err.response?.data?.message ?? '삭제에 실패했습니다.'),
   })
 
-  const openEdit = (record: Article) => {
+  const openEdit = async (record: Article) => {
     setEditing(record)
-    form.setFieldsValue({
-      title:     record.title,
-      contents:  '',
-      is_notice: record.is_notice === 1,
-    })
+    setContents('')
+    form.setFieldsValue({ title: record.title, is_notice: record.is_notice === 1 })
     setModalOpen(true)
+
+    // 본문은 단건 조회 API로 별도 로딩
+    setContentsLoading(true)
+    try {
+      const res = await fetchArticle(record.idx)
+      setContents(res.data?.data?.contents ?? '')
+    } catch {
+      message.error('본문을 불러오지 못했습니다.')
+    } finally {
+      setContentsLoading(false)
+    }
   }
 
-  // 게시판 필터 옵션: 현재 목록에서 추출
+  const closeModal = () => {
+    setModalOpen(false)
+    setEditing(null)
+    setContents('')
+    form.resetFields()
+  }
+
   const bbsOptions = [...new Map((data?.data as Article[] ?? []).map((a) => [a.bbs_id, a])).values()]
     .map((a) => ({ value: a.bbs_id, label: `${a.bbs_name} (${a.bbs_id})` }))
 
   const columns = [
-    { title: 'idx',   dataIndex: 'idx',       width: 70 },
+    { title: 'idx',    dataIndex: 'idx',       width: 70 },
     { title: '게시판', dataIndex: 'bbs_name',  width: 100 },
     {
       title: '제목',
@@ -141,22 +158,32 @@ export default function ArticlesPage() {
       />
 
       <Modal
-        title="게시글 수정"
+        title={`게시글 수정${editing ? ` — #${editing.idx}` : ''}`}
         open={modalOpen}
-        onCancel={() => { setModalOpen(false); form.resetFields() }}
+        onCancel={closeModal}
         onOk={() => form.submit()}
+        width={900}
         okText="저장"
         cancelText="취소"
         confirmLoading={saveMutation.isPending}
+        okButtonProps={{ disabled: contentsLoading }}
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={saveMutation.mutate}>
           <Form.Item name="title" label="제목" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="contents" label="내용" rules={[{ required: true }]}>
-            <Input.TextArea rows={6} />
+
+          <Form.Item label="내용" required>
+            {contentsLoading ? (
+              <div style={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #d9d9d9', borderRadius: 6 }}>
+                <Spin tip="본문 불러오는 중..." />
+              </div>
+            ) : (
+              <RichEditor value={contents} onChange={setContents} height={400} />
+            )}
           </Form.Item>
+
           <Form.Item name="is_notice" label="공지 여부" valuePropName="checked">
             <Switch />
           </Form.Item>
