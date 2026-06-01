@@ -5,6 +5,10 @@ import {
   NotificationOutlined,
   MenuOutlined,
   LogoutOutlined,
+  AppstoreOutlined,
+  TeamOutlined,
+  ContainerOutlined,
+  SettingOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/auth'
@@ -13,10 +17,28 @@ import { adminLogout } from '../api/cms'
 const { Sider, Content, Header } = Layout
 
 const menuItems = [
-  { key: '/cms/pages',   icon: <FileTextOutlined />,     label: '페이지 관리' },
-  { key: '/cms/banners', icon: <PictureOutlined />,      label: '배너 관리' },
-  { key: '/cms/popups',  icon: <NotificationOutlined />, label: '팝업 관리' },
-  { key: '/cms/menus',   icon: <MenuOutlined />,         label: '메뉴 관리' },
+  {
+    key: 'ops',
+    label: '운영 관리',
+    type: 'group' as const,
+    children: [
+      { key: '/boards',   icon: <AppstoreOutlined />,  label: '게시판 관리' },
+      { key: '/members',  icon: <TeamOutlined />,       label: '회원 관리' },
+      { key: '/articles', icon: <ContainerOutlined />,  label: '게시글 관리' },
+      { key: '/setting',  icon: <SettingOutlined />,    label: '사이트 설정' },
+    ],
+  },
+  {
+    key: 'cms',
+    label: 'CMS',
+    type: 'group' as const,
+    children: [
+      { key: '/cms/pages',   icon: <FileTextOutlined />,     label: '페이지 관리' },
+      { key: '/cms/banners', icon: <PictureOutlined />,      label: '배너 관리' },
+      { key: '/cms/popups',  icon: <NotificationOutlined />, label: '팝업 관리' },
+      { key: '/cms/menus',   icon: <MenuOutlined />,         label: '메뉴 관리' },
+    ],
+  },
 ]
 
 export default function AdminLayout() {
@@ -35,7 +57,7 @@ export default function AdminLayout() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider width={220} theme="dark">
-        <div style={{ padding: '16px 24px', color: '#fff', fontWeight: 700, fontSize: 16 }}>
+        <div style={{ padding: '16px 24px', color: '#fff', fontWeight: 700, fontSize: 16, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           CI4 Board Admin
         </div>
         <Menu
@@ -44,6 +66,7 @@ export default function AdminLayout() {
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={({ key }) => navigate(key)}
+          style={{ marginTop: 8 }}
         />
       </Sider>
       <Layout>

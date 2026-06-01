@@ -61,6 +61,56 @@ export interface CmsPopupDetail extends CmsPopup {
   contents: string
 }
 
+// ── 운영 관리 ────────────────────────────────────────────────────────────────
+
+export interface Board {
+  idx: number
+  bbs_id: string
+  bbs_name: string
+  bbs_used: string
+  list_count: string
+  comment_used: string
+  perm_view_list: string
+  perm_write_article: string
+}
+
+export interface UserGroup {
+  idx: number
+  group_name: string
+}
+
+export interface Member {
+  idx: number
+  user_id: string
+  nickname: string
+  email: string
+  status: number
+  group_name: string
+  article_count: number
+  comment_count: number
+  timestamp_insert: number
+}
+
+export interface Article {
+  idx: number
+  title: string
+  nickname: string
+  bbs_id: string
+  bbs_name: string
+  is_notice: number
+  is_deleted: number
+  comment_count: number
+  hit_count: number
+  timestamp_insert: number
+}
+
+export interface SiteSetting {
+  browser_title_fix_value: string
+  join_used: string
+  site_block_used: string
+  site_block_contents: string
+}
+
 export interface CmsMenu {
   idx: number
   parent_idx: number | null
