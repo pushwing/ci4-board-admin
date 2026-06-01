@@ -4,6 +4,8 @@ CI4 Board 관리자 프론트엔드 (SPA)
 
 CI4 Board API 서버(`ci4-board`)의 어드민 API(`/api/admin/v1/*`)를 소비하는 React 기반 관리자 대시보드입니다.
 
+> 작성자: 웅파 (blumine@gmail.com), 불의회상 (hoksi3k@gmail.com)
+
 ---
 
 ## 기술 스택
