@@ -25,6 +25,37 @@ import { CSS } from '@dnd-kit/utilities'
 import { fetchMenus, createMenu, updateMenu, deleteMenu, reorderMenus } from '../../api/cms'
 import type { CmsMenu } from '../../types'
 
+// ── 최상위 메뉴 드래그 시 하위 메뉴 그룹 통째로 이동 ──────────────────────
+
+function moveGroupWithChildren(items: FlatMenu[], activeId: number, overId: number): FlatMenu[] {
+  const activeIndex = items.findIndex((i) => i.idx === activeId)
+  const overIndex   = items.findIndex((i) => i.idx === overId)
+  const active = items[activeIndex]
+
+  // 하위 메뉴는 단순 이동
+  if (active.depth > 0) return arrayMove(items, activeIndex, overIndex)
+
+  // 최상위 메뉴: 바로 뒤에 이어지는 자식(depth>0)까지 그룹으로 묶음
+  let groupEnd = activeIndex + 1
+  while (groupEnd < items.length && items[groupEnd].depth > 0) groupEnd++
+  const group = items.slice(activeIndex, groupEnd)
+
+  // 그룹을 제외한 나머지 배열에서 over 위치 파악
+  const without = [...items.slice(0, activeIndex), ...items.slice(groupEnd)]
+  const overInWithout = without.findIndex((i) => i.idx === overId)
+
+  // 아래로 이동 시: over 항목의 서브트리 뒤에 삽입 / 위로 이동 시: over 항목 앞에 삽입
+  let insertAt: number
+  if (activeIndex < overIndex) {
+    insertAt = overInWithout + 1
+    while (insertAt < without.length && without[insertAt].depth > 0) insertAt++
+  } else {
+    insertAt = overInWithout
+  }
+
+  return [...without.slice(0, insertAt), ...group, ...without.slice(insertAt)]
+}
+
 // ── 플랫 목록 ↔ 트리 변환 ─────────────────────────────────────────────────
 
 function flattenTree(nodes: CmsMenu[], parentIdx: number | null = null, depth = 0): FlatMenu[] {
@@ -146,11 +177,8 @@ export default function MenusPage() {
       if (!over || active.id === over.id) return
 
       setFlatItems((prev) => {
-        const oldIdx = prev.findIndex((i) => i.idx === active.id)
-        const newIdx = prev.findIndex((i) => i.idx === over.id)
-        const next = arrayMove(prev, oldIdx, newIdx)
+        const next = moveGroupWithChildren(prev, active.id as number, over.id as number)
 
-        // 드래그 완료 후 일괄 저장
         reorderMutation.mutate(
           next.map((item, seq) => ({
             idx:        item.idx,

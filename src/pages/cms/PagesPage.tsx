@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  Table, Button, Modal, Form, Input, Select, Space, Tag, App, Typography, Popconfirm,
+  Table, Button, Modal, Form, Input, Select, Space, Tag, App, Typography, Popconfirm, Alert,
 } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { fetchPages, createPage, updatePage, deletePage } from '../../api/cms'
@@ -121,7 +121,32 @@ export default function PagesPage() {
         destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={saveMutation.mutate}>
-          <Form.Item name="slug" label="slug" rules={[{ required: true, pattern: /^[a-z0-9-]+$/, message: '영문 소문자·숫자·하이픈만 허용' }]}>
+          <Form.Item
+            name="slug"
+            label="Slug (페이지 주소)"
+            rules={[{ required: true, pattern: /^[a-z0-9-]+$/, message: '영문 소문자·숫자·하이픈만 허용' }]}
+            extra={
+              <Alert
+                style={{ marginTop: 8 }}
+                type="info"
+                showIcon
+                message="Slug란?"
+                description={
+                  <ul style={{ margin: '4px 0 0', paddingLeft: 16, fontSize: 12, lineHeight: '1.8' }}>
+                    <li>이 페이지의 고유 URL 주소가 됩니다.</li>
+                    <li>
+                      예) slug를 <code>about-us</code>로 입력하면{' '}
+                      <code style={{ color: '#1677ff' }}>https://사이트주소/pages/about-us</code> 로 접근 가능합니다.
+                    </li>
+                    <li>영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다. (공백·특수문자 불가)</li>
+                    <li>다른 페이지와 중복될 수 없습니다.</li>
+                    <li>한 번 발행 후에는 변경하지 않는 것을 권장합니다. (변경 시 기존 링크가 깨질 수 있습니다.)</li>
+                    <li>메뉴관리에서 URL을 <code>/pages/slug명</code>으로 입력하면 네비게이션에 연결됩니다.</li>
+                  </ul>
+                }
+              />
+            }
+          >
             <Input placeholder="about-us" />
           </Form.Item>
           <Form.Item name="title" label="제목" rules={[{ required: true }]}>
