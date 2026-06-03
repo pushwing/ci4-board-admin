@@ -4,9 +4,15 @@ import {
   Table, Button, Modal, Form, Input, Select, Space, Tag, App, Typography, Popconfirm, Alert,
 } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { fetchPages, createPage, updatePage, deletePage } from '../../api/cms'
+import { fetchPages, createPage, updatePage, deletePage, fetchMenus } from '../../api/cms'
 import RichEditor from '../../components/RichEditor'
-import type { CmsPage } from '../../types'
+import type { CmsMenu, CmsPage } from '../../types'
+
+function isSlugUsedInMenus(menus: CmsMenu[], slug: string): boolean {
+  return menus.some(
+    (m) => m.url === `/pages/${slug}` || isSlugUsedInMenus(m.children ?? [], slug)
+  )
+}
 
 const STATUS_LABELS: Record<number, React.ReactNode> = {
   0: <Tag color="default">임시저장</Tag>,
@@ -25,6 +31,12 @@ export default function PagesPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['cms-pages', page],
     queryFn: () => fetchPages({ page }).then((r) => r.data),
+  })
+
+  const { data: menusData } = useQuery({
+    queryKey: ['cms-menus'],
+    queryFn: () => fetchMenus().then((r) => r.data),
+    staleTime: 30_000,
   })
 
   const saveMutation = useMutation({
@@ -81,7 +93,17 @@ export default function PagesPage() {
       render: (_: any, record: CmsPage) => (
         <Space>
           <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)} />
-          <Popconfirm title="삭제하시겠습니까?" onConfirm={() => deleteMutation.mutate(record.idx)}>
+          <Popconfirm
+            title="삭제하시겠습니까?"
+            onConfirm={() => {
+              const menus = menusData?.data ?? []
+              if (isSlugUsedInMenus(menus, record.slug)) {
+                message.error('메뉴 관리에서 사용 중인 페이지입니다. 먼저 해당 메뉴의 URL을 변경해주세요.')
+                return
+              }
+              deleteMutation.mutate(record.idx)
+            }}
+          >
             <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>

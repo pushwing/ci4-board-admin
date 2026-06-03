@@ -72,7 +72,7 @@ export default function MembersPage() {
       title: '상태',
       dataIndex: 'status',
       width: 80,
-      render: (v: number) => <Tag color={v === 1 ? 'green' : 'red'}>{v === 1 ? '정상' : '탈퇴'}</Tag>,
+      render: (v: number) => <Tag color={Number(v) === 1 ? 'green' : 'red'}>{Number(v) === 1 ? '정상' : '탈퇴'}</Tag>,
     },
     { title: '글',  dataIndex: 'article_count', width: 60 },
     { title: '댓글', dataIndex: 'comment_count', width: 60 },
