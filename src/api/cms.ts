@@ -65,3 +65,27 @@ export const deleteMenu = (idx: number) => client.delete(`/cms/menus/${idx}`)
 
 export const reorderMenus = (items: { idx: number; sequence: number; parent_idx: number | null }[]) =>
   client.put('/cms/menus/reorder', items)
+
+// ── Library ──────────────────────────────────────────────────────────────────
+
+export const fetchLibraryFiles = (params?: {
+  page?: number
+  mime?: string
+  source?: string
+}) => client.get('/cms/library/files', { params })
+
+export const uploadLibraryFile = (file: File, isPublic = false) => {
+  const fd = new FormData()
+  fd.append('file', file)
+  fd.append('is_public', isPublic ? '1' : '0')
+  // Content-Type을 undefined로 지우면 브라우저가 multipart/form-data; boundary=... 를 자동 설정한다.
+  return client.post('/cms/library/files', fd, {
+    headers: { 'Content-Type': undefined },
+  })
+}
+
+export const updateLibraryFile = (idx: number, data: { alt_text: string | null; is_public?: 0 | 1 }) =>
+  client.put(`/cms/library/files/${idx}`, data)
+
+export const deleteLibraryFile = (idx: number) =>
+  client.delete(`/cms/library/files/${idx}`)

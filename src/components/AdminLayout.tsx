@@ -9,6 +9,7 @@ import {
   TeamOutlined,
   ContainerOutlined,
   SettingOutlined,
+  FolderOpenOutlined,
 } from '@ant-design/icons'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/auth'
@@ -37,6 +38,7 @@ const menuItems = [
       { key: '/cms/banners', icon: <PictureOutlined />,      label: '배너 관리' },
       { key: '/cms/popups',  icon: <NotificationOutlined />, label: '팝업 관리' },
       { key: '/cms/menus',   icon: <MenuOutlined />,         label: '메뉴 관리' },
+      { key: '/cms/library', icon: <FolderOpenOutlined />,   label: '파일 라이브러리' },
     ],
   },
 ]

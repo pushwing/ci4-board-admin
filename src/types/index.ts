@@ -121,3 +121,34 @@ export interface CmsMenu {
   is_used: 0 | 1
   children?: CmsMenu[]
 }
+
+export interface LibraryFile {
+  idx: number
+  uploader_idx: number
+  uploader_user_id: string | null
+  uploader_nickname: string | null
+  source: 'direct' | 'wysiwyg'
+  original_name: string
+  stored_name: string
+  file_path: string
+  mime_type: string
+  file_size: number
+  alt_text: string | null
+  is_public: 0 | 1
+  used_count: number
+  timestamp_insert: number
+  url: string
+}
+
+export interface LibraryUsage {
+  type: 'article' | 'cms_page' | 'cms_banner'
+  idx: number
+  hint: string
+}
+
+export interface LibraryListResponse {
+  total: number
+  page: number
+  per_page: number
+  items: LibraryFile[]
+}
