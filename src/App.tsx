@@ -10,6 +10,7 @@ import PagesPage from './pages/cms/PagesPage'
 import BannersPage from './pages/cms/BannersPage'
 import PopupsPage from './pages/cms/PopupsPage'
 import MenusPage from './pages/cms/MenusPage'
+import LibraryPage from './pages/cms/LibraryPage'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { token } = useAuthStore()
@@ -39,7 +40,8 @@ export default function App() {
           <Route path="cms/pages"   element={<PagesPage />} />
           <Route path="cms/banners" element={<BannersPage />} />
           <Route path="cms/popups"  element={<PopupsPage />} />
-          <Route path="cms/menus"   element={<MenusPage />} />
+          <Route path="cms/menus"    element={<MenusPage />} />
+          <Route path="cms/library"  element={<LibraryPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -14,8 +14,10 @@ import {
   StrikethroughOutlined, OrderedListOutlined, UnorderedListOutlined,
   AlignLeftOutlined, AlignCenterOutlined, AlignRightOutlined,
   LinkOutlined, PictureOutlined, FileImageOutlined, CodeOutlined,
+  FolderOpenOutlined,
 } from '@ant-design/icons'
 import './RichEditor.css'
+import LibraryPicker from './LibraryPicker'
 
 const lowlight = createLowlight(common)
 
@@ -28,8 +30,19 @@ interface Props {
 function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> | null }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [libraryOpen, setLibraryOpen] = useState(false)
 
   if (!editor) return null
+
+  const insertFromLibrary = (url: string, name: string, mime: string) => {
+    if (mime.startsWith('image/')) {
+      editor.chain().focus().setImage({ src: url, alt: name }).run()
+    } else {
+      editor.chain().focus().insertContent(
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a>`
+      ).run()
+    }
+  }
 
   const setLink = () => {
     const prev = editor.getAttributes('link').href as string | undefined
@@ -135,7 +148,24 @@ function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> | null }) {
         <Divider style={{ margin: '0 4px', height: 20 }} />
 
         {btn(<CodeOutlined />, '코드 블록', () => editor.chain().focus().toggleCodeBlock().run(), editor.isActive('codeBlock'))}
+        <Divider style={{ margin: '0 4px', height: 20 }} />
+
+        <Tooltip title="파일 라이브러리에서 삽입">
+          <Button
+            size="small"
+            type="text"
+            icon={<FolderOpenOutlined />}
+            onClick={() => setLibraryOpen(true)}
+            style={{ minWidth: 28 }}
+          />
+        </Tooltip>
       </Space>
+
+      <LibraryPicker
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        onSelect={insertFromLibrary}
+      />
     </div>
   )
 }
