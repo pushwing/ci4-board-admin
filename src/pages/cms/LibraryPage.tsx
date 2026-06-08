@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Table, Button, Modal, Form, Input, Space, App, Typography,
-  Popconfirm, Tag, Image, Select, Alert, Tooltip, Switch,
+  Tag, Image, Select, Alert, Tooltip, Switch,
 } from 'antd'
 import {
   UploadOutlined, EditOutlined, DeleteOutlined, FileOutlined,

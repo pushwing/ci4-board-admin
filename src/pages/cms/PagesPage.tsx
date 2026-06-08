@@ -6,13 +6,8 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { fetchPages, createPage, updatePage, deletePage, fetchMenus } from '../../api/cms'
 import RichEditor from '../../components/RichEditor'
-import type { CmsMenu, CmsPage } from '../../types'
-
-function isSlugUsedInMenus(menus: CmsMenu[], slug: string): boolean {
-  return menus.some(
-    (m) => m.url === `/pages/${slug}` || isSlugUsedInMenus(m.children ?? [], slug)
-  )
-}
+import { isSlugUsedInMenus } from '../../utils/cms'
+import type { CmsPage } from '../../types'
 
 const STATUS_LABELS: Record<number, React.ReactNode> = {
   0: <Tag color="default">임시저장</Tag>,

@@ -7,6 +7,7 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { fetchBanners, createBanner, updateBanner, deleteBanner } from '../../api/cms'
+import { isActiveNow } from '../../utils/cms'
 import type { CmsBanner } from '../../types'
 
 const tsToDay = (ts: number | null) => (ts ? dayjs.unix(ts) : null)
@@ -203,14 +204,6 @@ export default function BannersPage() {
   }
 
   const closeModal = () => { setModalOpen(false); setEditing(null); form.resetFields() }
-
-  const isActiveNow = (record: CmsBanner) => {
-    if (Number(record.is_used) !== 1) return false
-    const now = dayjs().unix()
-    if (record.start_at !== null && now < record.start_at) return false
-    if (record.end_at !== null && now > record.end_at) return false
-    return true
-  }
 
   const columns = [
     { title: 'idx',      dataIndex: 'idx',        width: 70 },
