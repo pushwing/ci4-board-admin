@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Table, Button, Modal, Form, Input, InputNumber, Switch, Space, App,
-  Typography, Popconfirm, DatePicker, Image, Select, Spin,
+  Typography, Popconfirm, DatePicker, Image, Select, Spin, Tag,
 } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -204,6 +204,14 @@ export default function BannersPage() {
 
   const closeModal = () => { setModalOpen(false); setEditing(null); form.resetFields() }
 
+  const isActiveNow = (record: CmsBanner) => {
+    if (Number(record.is_used) !== 1) return false
+    const now = dayjs().unix()
+    if (record.start_at !== null && now < record.start_at) return false
+    if (record.end_at !== null && now > record.end_at) return false
+    return true
+  }
+
   const columns = [
     { title: 'idx',      dataIndex: 'idx',        width: 70 },
     { title: '위치',     dataIndex: 'position',   width: 120 },
@@ -215,6 +223,13 @@ export default function BannersPage() {
     { title: '링크',   dataIndex: 'link_url', render: (v: string | null) => v ?? '-' },
     { title: '순서',   dataIndex: 'sequence', width: 70 },
     { title: '사용',   dataIndex: 'is_used',  width: 70, render: (v: number) => <Switch checked={Number(v) === 1} disabled size="small" /> },
+    {
+      title: '노출 상태',
+      width: 100,
+      render: (_: any, record: CmsBanner) => isActiveNow(record)
+        ? <Tag color="success">노출중</Tag>
+        : <Tag color="default">비노출</Tag>,
+    },
     {
       title: '관리',
       width: 100,
