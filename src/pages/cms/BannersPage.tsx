@@ -2,11 +2,12 @@ import { useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Table, Button, Modal, Form, Input, InputNumber, Switch, Space, App,
-  Typography, Popconfirm, DatePicker, Image, Select, Spin,
+  Typography, Popconfirm, DatePicker, Image, Select, Spin, Tag,
 } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { fetchBanners, createBanner, updateBanner, deleteBanner } from '../../api/cms'
+import { isActiveNow } from '../../utils/cms'
 import type { CmsBanner } from '../../types'
 
 const tsToDay = (ts: number | null) => (ts ? dayjs.unix(ts) : null)
@@ -215,6 +216,13 @@ export default function BannersPage() {
     { title: '링크',   dataIndex: 'link_url', render: (v: string | null) => v ?? '-' },
     { title: '순서',   dataIndex: 'sequence', width: 70 },
     { title: '사용',   dataIndex: 'is_used',  width: 70, render: (v: number) => <Switch checked={Number(v) === 1} disabled size="small" /> },
+    {
+      title: '노출 상태',
+      width: 100,
+      render: (_: any, record: CmsBanner) => isActiveNow(record)
+        ? <Tag color="success">노출중</Tag>
+        : <Tag color="default">비노출</Tag>,
+    },
     {
       title: '관리',
       width: 100,

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Button, Modal, Form, Input, Select, Switch, Space, App,
@@ -129,15 +129,16 @@ export default function MenusPage() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
-  const { isLoading } = useQuery({
+  const { data: menusData, isLoading } = useQuery({
     queryKey: ['cms-menus'],
-    queryFn: () =>
-      fetchMenus().then((r) => {
-        const flat = flattenTree(r.data.data ?? [])
-        setFlatItems(flat)
-        return r.data
-      }),
+    queryFn: () => fetchMenus().then((r) => r.data),
   })
+
+  useEffect(() => {
+    if (menusData?.data) {
+      setFlatItems(flattenTree(menusData.data))
+    }
+  }, [menusData])
 
   const saveMutation = useMutation({
     mutationFn: (values: any) => {

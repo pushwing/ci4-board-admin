@@ -6,13 +6,8 @@ import {
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { fetchPages, createPage, updatePage, deletePage, fetchMenus } from '../../api/cms'
 import RichEditor from '../../components/RichEditor'
-import type { CmsMenu, CmsPage } from '../../types'
-
-function isSlugUsedInMenus(menus: CmsMenu[], slug: string): boolean {
-  return menus.some(
-    (m) => m.url === `/pages/${slug}` || isSlugUsedInMenus(m.children ?? [], slug)
-  )
-}
+import { isSlugUsedInMenus } from '../../utils/cms'
+import type { CmsPage } from '../../types'
 
 const STATUS_LABELS: Record<number, React.ReactNode> = {
   0: <Tag color="default">임시저장</Tag>,
@@ -87,6 +82,13 @@ export default function PagesPage() {
     { title: 'slug',   dataIndex: 'slug',  render: (v: string) => <code>{v}</code> },
     { title: '제목',   dataIndex: 'title' },
     { title: '상태',   dataIndex: 'status', width: 100, render: (v: number) => STATUS_LABELS[v] },
+    {
+      title: '메뉴 사용',
+      width: 110,
+      render: (_: any, record: CmsPage) => isSlugUsedInMenus(menusData?.data ?? [], record.slug)
+        ? <Tag color="blue">사용중</Tag>
+        : <Tag color="default">미사용</Tag>,
+    },
     {
       title: '관리',
       width: 120,
